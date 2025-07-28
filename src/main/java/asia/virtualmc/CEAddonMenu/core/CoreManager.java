@@ -2,23 +2,15 @@ package asia.virtualmc.CEAddonMenu.core;
 
 import asia.virtualmc.CEAddonMenu.Main;
 import asia.virtualmc.CEAddonMenu.commands.CommandManager;
-import asia.virtualmc.CEAddonMenu.craftengine.utilities.CraftEngineUtils;
 import asia.virtualmc.CEAddonMenu.utilities.FileUtils;
 import asia.virtualmc.CEAddonMenu.utilities.GUIUtils;
 import asia.virtualmc.CEAddonMenu.utilities.YAMLUtils;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
-import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
-import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
-import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
-import com.github.stefvanschie.inventoryframework.pane.component.PagingButtons;
-import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -26,9 +18,7 @@ import java.util.*;
 
 public class CoreManager {
     private static ChestGui mainMenu;
-    // Map<YAML name, Gui>
-    private static final Map<String, ChestGui> itemsMenu = new LinkedHashMap<>();
-    // Map<namespace, set of item names>
+    // Map<namespace, itemNames> for command: /cea get
     private static final Map<String, Set<String>> itemIDs = new HashMap<>();
 
     public static void load() {
@@ -93,8 +83,6 @@ public class CoreManager {
                     if (section != null) {
                         // looping through item keys
                         for (String itemName : section.getRoutesAsStrings(false)) {
-
-
                             if (itemName.contains(namespace)) {
                                 String[] parts = itemName.split(":");
                                 itemName = parts[parts.length - 1];
@@ -117,83 +105,23 @@ public class CoreManager {
                 }
 
                 // Create itemsMenu
-                ChestGui itemsMenu = new ChestGui(6, yamlName);
-                PaginatedPane itemsPane = new PaginatedPane(0, 0, 9, 5);
-                itemsPane.populateWithGuiItems(itemsList);
-
-                PagingButtons pagingButtons = new PagingButtons(Slot.fromXY(0, 5), 9, itemsPane);
-                pagingButtons.setBackwardButton(new GuiItem(GUIUtils.getPrevious()));
-                pagingButtons.setForwardButton(new GuiItem(GUIUtils.getNext()));
-
-                itemsMenu.addPane(itemsPane);
-                itemsMenu.addPane(pagingButtons);
-                itemsMenu.setOnGlobalClick(event -> event.setCancelled(true));
+                ChestGui itemsMenu = GUIUtils.getPaginatedGUI(yamlName, itemsList);
 
                 // Add YAML to directory
                 yamlList.add(GUIUtils.getGuiButton(yamlName, itemsMenu));
             }
 
             // Create YAML Menu
-            ChestGui yamlMenu = new ChestGui(6, file.getName());
-            PaginatedPane yamlPane = new PaginatedPane(0, 0, 9, 5);
-            yamlPane.populateWithGuiItems(yamlList);
-
-            PagingButtons pagingButtons = new PagingButtons(Slot.fromXY(0, 5), 9, yamlPane);
-            pagingButtons.setBackwardButton(new GuiItem(GUIUtils.getPrevious()));
-            pagingButtons.setForwardButton(new GuiItem(GUIUtils.getNext()));
-
-            yamlMenu.addPane(yamlPane);
-            yamlMenu.addPane(pagingButtons);
-            yamlMenu.setOnGlobalClick(event -> event.setCancelled(true));
+            ChestGui yamlMenu = GUIUtils.getPaginatedGUI(file.getName(), yamlList);
 
             // Add items to Main Menu
             dirList.add(GUIUtils.getGuiButton(file.getName(), yamlMenu));
         }
 
         // Main Menu
-        mainMenu = new ChestGui(6, "CraftEngine");
-        PaginatedPane mainPane = new PaginatedPane(0, 0, 9, 5);
-        mainPane.populateWithGuiItems(dirList);
-
-        PagingButtons pagingButtons = new PagingButtons(Slot.fromXY(0, 5), 9, mainPane);
-        pagingButtons.setBackwardButton(new GuiItem(GUIUtils.getPrevious()));
-        pagingButtons.setForwardButton(new GuiItem(GUIUtils.getNext()));
-
-        mainMenu.addPane(mainPane);
-        mainMenu.addPane(pagingButtons);
-        mainMenu.setOnGlobalClick(event -> event.setCancelled(true));
+        mainMenu = GUIUtils.getPaginatedGUI("CraftEngine", dirList);
 
         CommandManager.register();
-    }
-
-    public static void build(Map<String, Map<String, Set<String>>> cache) {
-        for (String yamlName : cache.keySet()) {
-            Map<String, Set<String>> temp = cache.get(yamlName);
-            List<ItemStack> items = new ArrayList<>();
-
-            if (temp == null || temp.isEmpty()) {
-                continue;
-            }
-
-            for (Map.Entry<String, Set<String>> entry : temp.entrySet()) {
-                String namespace = entry.getKey();
-
-                for (String name : entry.getValue()) {
-                    ItemStack item = CraftEngineUtils.get(namespace, name);
-                    if (item == null) {
-                        Main.getInstance().getLogger().severe("Unable to load " + namespace + ":" + name + " into gui.");
-                        continue;
-                    }
-
-                    items.add(item);
-                }
-            }
-
-            itemsMenu.put(yamlName, GUIUtils.getItems(yamlName, items));
-        }
-
-        mainMenu = GUIUtils.getMainMenu(itemsMenu);
-
     }
 
     public static void show(Player player) {
@@ -202,7 +130,6 @@ public class CoreManager {
         }
     }
 
-    // Getter Methods
     public static Set<String> getNamespaces() {
         return itemIDs.keySet();
     }

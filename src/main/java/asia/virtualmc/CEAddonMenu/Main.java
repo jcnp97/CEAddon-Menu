@@ -7,13 +7,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
     private static Main plugin;
-    private CraftEngineReload craftEngineReload;
 
     @Override
     public void onEnable() {
         plugin = this;
         CommandAPI.onEnable();
-        this.craftEngineReload = new CraftEngineReload(this);
+        new CraftEngineReload(this);
     }
 
     @Override

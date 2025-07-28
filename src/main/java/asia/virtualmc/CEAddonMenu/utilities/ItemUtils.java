@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
-
 public class ItemUtils {
 
     public static void give(@NotNull Player player, @NotNull ItemStack item) {
