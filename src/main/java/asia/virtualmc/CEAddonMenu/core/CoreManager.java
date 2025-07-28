@@ -44,9 +44,12 @@ public class CoreManager {
         List<File> directories = FileUtils.getDirectories(resources, excludedDirs);
 
         List<GuiItem> dirList = new ArrayList<>();
+        List<ChestGui> yamlGuis = new ArrayList<>();
 
         // looping through directories
         for (File file : directories) {
+            List<ChestGui> itemsGuis = new ArrayList<>();
+
             YamlDocument packConfig = YAMLUtils.getYaml(file, "pack.yml");
             if (packConfig == null) {
                 Main.getInstance().getLogger().severe("Couldn't find pack.yml from " + file.getName());
@@ -106,6 +109,7 @@ public class CoreManager {
 
                 // Create itemsMenu
                 ChestGui itemsMenu = GUIUtils.getPaginatedGUI(yamlName, itemsList);
+                itemsGuis.add(itemsMenu);
 
                 // Add YAML to directory
                 yamlList.add(GUIUtils.getGuiButton(yamlName, itemsMenu));
@@ -113,6 +117,12 @@ public class CoreManager {
 
             // Create YAML Menu
             ChestGui yamlMenu = GUIUtils.getPaginatedGUI(file.getName(), yamlList);
+            yamlGuis.add(yamlMenu);
+
+            // Add Return Buttons
+            for (ChestGui gui : itemsGuis) {
+                GUIUtils.addReturn("Return to Files", gui, yamlMenu);
+            }
 
             // Add items to Main Menu
             dirList.add(GUIUtils.getGuiButton(file.getName(), yamlMenu));
@@ -120,6 +130,11 @@ public class CoreManager {
 
         // Main Menu
         mainMenu = GUIUtils.getPaginatedGUI("CraftEngine", dirList);
+
+        // Add Return Buttons
+        for (ChestGui gui : yamlGuis) {
+            GUIUtils.addReturn("Return to Menu", gui, mainMenu);
+        }
 
         CommandManager.register();
     }
