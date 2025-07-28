@@ -2,6 +2,7 @@ package asia.virtualmc.CEAddonMenu.core;
 
 import asia.virtualmc.CEAddonMenu.Main;
 import asia.virtualmc.CEAddonMenu.commands.CommandManager;
+import asia.virtualmc.CEAddonMenu.utilities.AsyncUtils;
 import asia.virtualmc.CEAddonMenu.utilities.FileUtils;
 import asia.virtualmc.CEAddonMenu.utilities.GUIUtils;
 import asia.virtualmc.CEAddonMenu.utilities.YAMLUtils;
@@ -22,19 +23,27 @@ public class CoreManager {
     private static final Map<String, Set<String>> itemIDs = new HashMap<>();
 
     public static void load() {
+        AsyncUtils.runAsyncThenSync(Main.getInstance(),
+                CoreManager::build,
+                result -> {
+                    CommandManager.register();
+                });
+    }
+
+    public static boolean build() {
         itemIDs.clear();
         mainMenu = null;
 
         Plugin craftEngine = Bukkit.getPluginManager().getPlugin("CraftEngine");
         if (craftEngine == null) {
             Main.getInstance().getLogger().severe("Looks like CraftEngine wasn't installed. Skipping menu generation..");
-            return;
+            return false;
         }
 
         YamlDocument config = YAMLUtils.getYaml(Main.getInstance(), "config.yml");
         if (config == null) {
             Main.getInstance().getLogger().severe("Couldn't find config.yml. Skipping menu generation..");
-            return;
+            return false;
         }
 
         Set<String> excludedDirs = new HashSet<>(config.getStringList("excluded-directories"));
@@ -136,7 +145,7 @@ public class CoreManager {
             GUIUtils.addReturn("Return to Menu", gui, mainMenu);
         }
 
-        CommandManager.register();
+        return true;
     }
 
     public static void show(Player player) {

@@ -44,4 +44,21 @@ public class CraftEngineUtils {
             amount -= stackSize;
         }
     }
+
+    public static void give(Player player, ItemStack item) {
+        Key key = CraftEngineItems.getCustomItemId(item);
+
+        if (key == null) {
+            return;
+        }
+
+        CustomItem<ItemStack> customItem = CraftEngineItems.byId(key);
+        if (customItem != null) {
+            HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(customItem.buildItemStack());
+            if (!leftover.isEmpty()) {
+                Location dropLocation = player.getLocation();
+                leftover.values().forEach(stack -> player.getWorld().dropItemNaturally(dropLocation, stack));
+            }
+        }
+    }
 }

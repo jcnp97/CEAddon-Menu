@@ -42,7 +42,7 @@ public class GUIUtils {
         }
 
         return new GuiItem(item, event -> {
-            ItemUtils.give((Player) event.getWhoClicked(), item);
+            CraftEngineUtils.give((Player) event.getWhoClicked(), item);
         });
     }
 
