@@ -1,0 +1,5 @@
+name: CEAddon-Menu
+version: '1.0'
+main: asia.virtualmc.CEAddonMenu.Main
+api-version: '1.21'
+depend: ["CraftEngine"]

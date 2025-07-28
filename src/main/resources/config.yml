@@ -1,0 +1,8 @@
+debug: true
+excluded-directories:
+  - "resourcepack"
+  - "default"
+  - "internal"
+excluded-files:
+  - "templates"
+  - "categories"
