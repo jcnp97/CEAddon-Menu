@@ -11,6 +11,7 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.block.implementation.Section;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -113,7 +114,7 @@ public class CoreManager {
                 }
 
                 if (!names.isEmpty()) {
-                    itemIDs.put(namespace, names);
+                    itemIDs.computeIfAbsent(namespace, k -> new HashSet<>()).addAll(names);
                 }
 
                 // Create itemsMenu
@@ -121,7 +122,7 @@ public class CoreManager {
                 itemsGuis.add(itemsMenu);
 
                 // Add YAML to directory
-                yamlList.add(GUIUtils.getGuiButton(yamlName, itemsMenu));
+                yamlList.add(GUIUtils.getGuiButton(yamlName, itemsMenu, Material.PAPER));
             }
 
             // Create YAML Menu
@@ -134,7 +135,7 @@ public class CoreManager {
             }
 
             // Add items to Main Menu
-            dirList.add(GUIUtils.getGuiButton(file.getName(), yamlMenu));
+            dirList.add(GUIUtils.getGuiButton(file.getName(), yamlMenu, Material.BOOK));
         }
 
         // Main Menu

@@ -27,6 +27,11 @@ public class GUIUtils {
         pagingButtons.setBackwardButton(new GuiItem(getPrevious()));
         pagingButtons.setForwardButton(new GuiItem(getNext()));
 
+        pagingButtons.setOnClick(event -> {
+            Player player = (Player) event.getWhoClicked();
+            player.playSound(player, "minecraft:ui.button.click", 1, 1);
+        });
+
         gui.addPane(pane);
         gui.addPane(pagingButtons);
         gui.setOnGlobalClick(event -> event.setCancelled(true));
@@ -46,11 +51,13 @@ public class GUIUtils {
         });
     }
 
-    public static GuiItem getGuiButton(String title, ChestGui gui) {
-        ItemStack item = createButton(Material.PAPER, title, 1);
+    public static GuiItem getGuiButton(String title, ChestGui gui, Material material) {
+        ItemStack item = createButton(material, title, 1);
 
         return new GuiItem(item, event -> {
-            gui.show(event.getWhoClicked());
+            Player player = (Player) event.getWhoClicked();
+            player.playSound(player, "minecraft:ui.button.click", 1, 1);
+            gui.show(player);
         });
     }
 

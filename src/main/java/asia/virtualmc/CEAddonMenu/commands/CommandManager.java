@@ -9,6 +9,7 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -62,10 +63,19 @@ public class CommandManager {
     }
 
     private static void give(CommandSender sender, CommandArguments args, String namespace) {
-        Player target = (Player) args.getOptional("player")
-                .orElse(sender instanceof Player ? sender : null);
+        Player target;
 
-        if (target == null) {
+        String playerName = (String) args.get("player");
+        if (playerName != null) {
+            target = Bukkit.getPlayer(playerName);
+
+            if (target == null) {
+                sender.sendMessage("§cPlayer '" + playerName + "' is not online.");
+                return;
+            }
+        } else if (sender instanceof Player) {
+            target = (Player) sender;
+        } else {
             Main.getInstance().getLogger()
                     .severe("[CEA] You must specify a player when using this command from the console.");
             return;
@@ -76,6 +86,7 @@ public class CommandManager {
 
         CraftEngineUtils.give(target, namespace, itemName, amount);
     }
+
 
     private static CommandAPICommand showGui() {
         return new CommandAPICommand("menu")

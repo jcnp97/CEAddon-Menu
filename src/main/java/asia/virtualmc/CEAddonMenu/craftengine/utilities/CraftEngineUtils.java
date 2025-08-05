@@ -43,11 +43,12 @@ public class CraftEngineUtils {
 
             amount -= stackSize;
         }
+
+        player.playSound(player, "minecraft:entity.item.pickup", 1, 1);
     }
 
     public static void give(Player player, ItemStack item) {
         Key key = CraftEngineItems.getCustomItemId(item);
-
         if (key == null) {
             return;
         }
@@ -60,5 +61,6 @@ public class CraftEngineUtils {
                 leftover.values().forEach(stack -> player.getWorld().dropItemNaturally(dropLocation, stack));
             }
         }
+        player.playSound(player, "minecraft:entity.item.pickup", 1, 1);
     }
 }
