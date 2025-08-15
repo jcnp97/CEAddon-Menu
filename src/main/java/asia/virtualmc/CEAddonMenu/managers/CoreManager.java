@@ -59,7 +59,7 @@ public class CoreManager {
         List<GuiItem> dirList = getDirectories(config, craftEngine, yamlGuis);
 
         // Main Menu
-        mainMenu = GUIUtils.getPaginatedGUI("CraftEngine", dirList);
+        mainMenu = GUIUtils.getPaginatedGUI(config.getString("gui.directory-menu"), dirList);
 
         // Add Return Buttons
         for (ChestGui gui : yamlGuis) {
@@ -97,10 +97,11 @@ public class CoreManager {
             }
 
             // Retrieve list of yaml files per directory
-            List<GuiItem> yamlList = getYamlFiles(files, namespace, keysToRead, itemsGuis);
+            String title = config.getString("gui.items-menu");
+            List<GuiItem> yamlList = getYamlFiles(files, namespace, keysToRead, itemsGuis, title);
 
             // Create YAML Menu
-            ChestGui yamlMenu = GUIUtils.getPaginatedGUI(file.getName(), yamlList);
+            ChestGui yamlMenu = GUIUtils.getPaginatedGUI(config.getString("gui.yaml-menu"), yamlList);
             yamlGuis.add(yamlMenu);
 
             // Add Return Buttons
@@ -116,7 +117,8 @@ public class CoreManager {
     }
 
     private List<GuiItem> getYamlFiles(Map<String, YamlDocument> files, String namespace,
-                                       Set<String> keysToRead, List<ChestGui> itemsGuis) {
+                                       Set<String> keysToRead, List<ChestGui> itemsGuis,
+                                       String title) {
         List<GuiItem> yamlList = new ArrayList<>();
 
         for (Map.Entry<String, YamlDocument> entry : files.entrySet()) {
@@ -127,7 +129,7 @@ public class CoreManager {
             List<GuiItem> itemsList = getCraftEngineItems(yaml, namespace, keysToRead);
 
             // Create itemsMenu
-            ChestGui itemsMenu = GUIUtils.getPaginatedGUI(yamlName, itemsList);
+            ChestGui itemsMenu = GUIUtils.getPaginatedGUI(title, itemsList);
             itemsGuis.add(itemsMenu);
 
             // Add YAML to directory

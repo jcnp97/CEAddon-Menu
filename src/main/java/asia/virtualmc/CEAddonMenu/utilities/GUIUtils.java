@@ -11,7 +11,6 @@ import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -24,7 +23,7 @@ public class GUIUtils {
         PaginatedPane pane = new PaginatedPane(0, 0, 9, 5);
         pane.populateWithGuiItems(content);
 
-        PagingButtons pagingButtons = new PagingButtons(Slot.fromXY(0, 5), 9, pane);
+        PagingButtons pagingButtons = new PagingButtons(Slot.fromXY(1, 5), 7, pane);
         pagingButtons.setBackwardButton(new GuiItem(getPrevious()));
         pagingButtons.setForwardButton(new GuiItem(getNext()));
 
@@ -78,7 +77,7 @@ public class GUIUtils {
 
     public static void addReturn(String title, ChestGui toModify, ChestGui gui) {
         StaticPane staticPane = new StaticPane(0, 0, 9, 6);
-        ItemStack item = createButton(Material.REDSTONE_BLOCK, "<red>" + title, 1);
+        ItemStack item = createButton(Material.ARROW, "<red>" + title, 1004);
 
         GuiItem guiItem = new GuiItem(item, event -> {
             gui.show(event.getWhoClicked());
@@ -89,11 +88,11 @@ public class GUIUtils {
     }
 
     private static ItemStack getPrevious() {
-        return createButton(Material.ARROW, "<green>Previous Page", 1);
+        return createButton(Material.ARROW, "<green>Previous Page", 1002);
     }
 
     private static ItemStack getNext() {
-        return createButton(Material.ARROW, "<green>Next Page", 1);
+        return createButton(Material.ARROW, "<green>Next Page", 1000);
     }
 
     public static ItemStack createButton(Material material, String displayName, int modelData) {

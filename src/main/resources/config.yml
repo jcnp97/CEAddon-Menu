@@ -9,10 +9,16 @@ excluded-files:
   - "templates.yml"
   - "categories.yml"
 
-# When reading into CraftEngine files, what top-level keys to read into?
+# When reading into CraftEngine files, what top-level keys should we read?
 # For more info, each configuration file (yaml file) has top-level keys such as `items`, `images`, etc.
 # If you use sub-keys such as `items#misc` or `items#food`, make sure to include those.
 keys-to-read:
   - "items"
   - "items#misc"
   - "images"
+
+# Which titles should we use per every GUI?
+gui:
+  directory-menu: "§f<shift:-11><image:internal:item_browser>"
+  yaml-menu: "§f<shift:-11><image:internal:item_browser>"
+  items-menu: "§f<shift:-11><image:internal:item_browser>"
