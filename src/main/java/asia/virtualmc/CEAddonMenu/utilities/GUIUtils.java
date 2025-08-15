@@ -11,6 +11,7 @@ import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -46,8 +47,22 @@ public class GUIUtils {
             return null;
         }
 
+        item = ItemStackUtils.addLore(item, List.of("", "<green>ᴄʟɪᴄᴋ ᴛᴏ ɢᴇᴛ ᴀɴ ɪᴛᴇᴍ"));
+        ItemStack finalItem = item;
         return new GuiItem(item, event -> {
-            CraftEngineUtils.give((Player) event.getWhoClicked(), item);
+            CraftEngineUtils.give((Player) event.getWhoClicked(), finalItem);
+        });
+    }
+
+    public static GuiItem getImageButton(String id, String character) {
+        String tag = "<image:" + id + ">";
+        ItemStack item = ItemStackUtils.create(Material.NAME_TAG, tag, List.of("<green>ᴄʟɪᴄᴋ ᴛᴏ ᴄᴏᴘʏ"), 1);
+
+        return new GuiItem(item, event -> {
+            Player player = (Player) event.getWhoClicked();
+            event.getWhoClicked().closeInventory();
+            TextUtils.insertIntoChat(player, tag, character);
+            player.playSound(player, "minecraft:entity.item.pickup", 1, 1);
         });
     }
 
@@ -85,7 +100,7 @@ public class GUIUtils {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            Component name = AdventureUtils.convertToComponent("<!i>" + displayName);
+            Component name = AdventureUtils.toComponent("<!i>" + displayName);
             meta.displayName(name);
             meta.setCustomModelData(modelData);
 

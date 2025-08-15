@@ -1,7 +1,6 @@
-package asia.virtualmc.CEAddonMenu.commands;
+package asia.virtualmc.CEAddonMenu.managers;
 
 import asia.virtualmc.CEAddonMenu.Main;
-import asia.virtualmc.CEAddonMenu.core.CoreManager;
 import asia.virtualmc.CEAddonMenu.craftengine.utilities.CraftEngineUtils;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -18,8 +17,13 @@ import java.util.Set;
 
 public class CommandManager {
     private static final Set<String> commands = new HashSet<>();
+    private CoreManager coreManager;
 
-    public static void register() {
+    public void register() {
+        if (coreManager == null) {
+            this.coreManager = Main.getInstance().getCoreManager();
+        }
+
         if (!commands.isEmpty()) {
             for (String string : commands) {
                 CommandAPI.unregister(string);
@@ -29,7 +33,7 @@ public class CommandManager {
         CommandAPICommand mainCommand = new CommandAPICommand("cea");
         CommandAPICommand getItem = new CommandAPICommand("get");
 
-        for (String namespace : CoreManager.getNamespaces()) {
+        for (String namespace : coreManager.getNamespaces()) {
             getItem.withSubcommand(build(namespace));
         }
 
@@ -41,8 +45,8 @@ public class CommandManager {
         commands.add(mainCommand.getName());
     }
 
-    private static CommandAPICommand build(String namespace) {
-        Set<String> itemNames = CoreManager.getNames(namespace);
+    private CommandAPICommand build(String namespace) {
+        Set<String> itemNames = coreManager.getNames(namespace);
 
         return new CommandAPICommand(namespace)
                 .withArguments(
@@ -62,7 +66,7 @@ public class CommandManager {
                 });
     }
 
-    private static void give(CommandSender sender, CommandArguments args, String namespace) {
+    private void give(CommandSender sender, CommandArguments args, String namespace) {
         Player target;
 
         String playerName = (String) args.get("player");
@@ -87,13 +91,12 @@ public class CommandManager {
         CraftEngineUtils.give(target, namespace, itemName, amount);
     }
 
-
-    private static CommandAPICommand showGui() {
+    private CommandAPICommand showGui() {
         return new CommandAPICommand("menu")
                 .withPermission("cea.admin")
                 .executes((sender, args) -> {
                     if (sender instanceof Player player) {
-                        CoreManager.show(player);
+                        coreManager.show(player);
                     } else {
                         sender.sendMessage("This command can only be used by players.");
                     }

@@ -1,8 +1,18 @@
-debug: true
+# When reading into CraftEngine files, which directories should we ignore?
 excluded-directories:
   - "resourcepack"
   - "default"
   - "internal"
+
+# When reading into CraftEngine files, which files should we ignore?
 excluded-files:
   - "templates.yml"
   - "categories.yml"
+
+# When reading into CraftEngine files, what top-level keys to read into?
+# For more info, each configuration file (yaml file) has top-level keys such as `items`, `images`, etc.
+# If you use sub-keys such as `items#misc` or `items#food`, make sure to include those.
+keys-to-read:
+  - "items"
+  - "items#misc"
+  - "images"

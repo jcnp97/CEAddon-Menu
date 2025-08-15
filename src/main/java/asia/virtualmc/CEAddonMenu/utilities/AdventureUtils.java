@@ -13,7 +13,7 @@ public class AdventureUtils {
     private static final LegacyComponentSerializer legacyAmpersand = LegacyComponentSerializer.legacyAmpersand();
     private static final LegacyComponentSerializer legacySection = LegacyComponentSerializer.legacySection();
 
-    public static Component convertToComponent(String string) {
+    public static Component toComponent(String string) {
         Component component;
         if (string.contains("&")) {
             component = legacyAmpersand.deserialize(string);
@@ -26,11 +26,11 @@ public class AdventureUtils {
         return component.decoration(TextDecoration.ITALIC, false);
     }
 
-    public static List<Component> convertToComponent(List<String> strings) {
+    public static List<Component> toComponent(List<String> strings) {
         List<Component> components = new ArrayList<>();
 
         for (String string : strings) {
-            components.add(convertToComponent(string));
+            components.add(toComponent(string));
         }
 
         return components;
