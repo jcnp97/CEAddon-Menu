@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ConfigReader {
     private final Main plugin;
@@ -22,6 +23,8 @@ public class ConfigReader {
     private static boolean automaticRefresh;
     private static long refreshDelay;
     private static String title;
+    private static Set<String> excluded;
+    private static Plugin craftEngine;
 
     public record ConfigKey(
             @NotNull String packName,
@@ -35,17 +38,18 @@ public class ConfigReader {
     ) {}
 
     // key=packName, value=directories
-    private final Map<String, Set<String>> packs = new HashMap<>();
+    private final Map<String, Set<String>> packs = new ConcurrentHashMap<>();
 
     // items cache: mainKey=packName, subKey=dirName, value=data
-    private final Map<ConfigKey, Set<String>> items = new HashMap<>();
-    // image cache: mainKey=packName, subKey=dirName, value=data
-    private final Map<String, Set<Image>> images = new HashMap<>();
+    private final Map<ConfigKey, Set<String>> items = new ConcurrentHashMap<>();
+    // image cache: mainKey=yamlName, subKey=dirName, value=data
+    private final Map<String, Set<Image>> images = new ConcurrentHashMap<>();
     // sounds cache: key=yamlName, value=soundId
-    private final Map<String, Set<String>> sounds = new HashMap<>();
+    private final Map<String, Set<String>> sounds = new ConcurrentHashMap<>();
 
     public ConfigReader(Main plugin) {
         this.plugin = plugin;
+        load();
     }
 
     public void readAndBuild() {
@@ -57,26 +61,28 @@ public class ConfigReader {
     }
 
     // private methods
-    private boolean read() {
-        if (!clearCache()) return false;
-
-        Plugin craftEngine = Bukkit.getPluginManager().getPlugin("CraftEngine");
+    private void load() {
+        craftEngine = Bukkit.getPluginManager().getPlugin("CraftEngine");
         if (craftEngine == null) {
             ConsoleUtils.severe("CraftEngine is not found. Skipping menu generation..");
-            return false;
+            return;
         }
 
         YamlDocument config = YAMLUtils.getYaml(Main.getInstance(), "config.yml");
         if (config == null) {
             ConsoleUtils.severe("Couldn't find config.yml. Skipping menu generation..");
-            return false;
+            return;
         }
 
         // Read config.yml
         automaticRefresh = config.getBoolean("automatic-reload");
         refreshDelay = config.getLong("refresh-delay");
         title = config.getString("menu-title");
-        Set<String> excluded = new HashSet<>(config.getStringList("excluded-directories"));
+        excluded = new HashSet<>(config.getStringList("excluded-directories"));
+    }
+
+    private boolean read() {
+        if (!clearCache()) return false;
 
         // Retrieve every CraftEngine pack directories
         File resources = new File(craftEngine.getDataFolder(), "resources");

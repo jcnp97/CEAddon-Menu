@@ -26,30 +26,34 @@ public class CommandManager {
         this.configReader = configReader;
     }
 
+
     public void register() {
-        if (!commands.isEmpty()) {
+        Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
             for (String string : commands) {
-                CommandAPI.unregister(string);
+                try {
+                    CommandAPI.unregister(string);
+                } catch (Exception ignored) {}
             }
-        }
+            commands.clear();
 
-        CommandAPICommand mainCommand = new CommandAPICommand("cea");
-        CommandAPICommand getItem = new CommandAPICommand("get");
+            CommandAPICommand mainCommand = new CommandAPICommand("cea");
+            CommandAPICommand getItem = new CommandAPICommand("get");
 
-        for (Map.Entry<String, Set<String>> entry : configReader.getItems().entrySet()) {
-            getItem.withSubcommand(build(entry.getKey(), entry.getValue()));
-        }
+            for (Map.Entry<String, Set<String>> entry : configReader.getItems().entrySet()) {
+                getItem.withSubcommand(build(entry.getKey(), entry.getValue()));
+            }
 
-        mainCommand
-                .withSubcommand(reload())
-                .withSubcommand(getItem)
-                .withSubcommand(show())
-                .withSubcommand(showItems())
-                .withSubcommand(showSounds())
-                .withSubcommand(showImages())
-                .register();
+            mainCommand
+                    .withSubcommand(reload())
+                    .withSubcommand(getItem)
+                    .withSubcommand(show())
+                    .withSubcommand(showItems())
+                    .withSubcommand(showSounds())
+                    .withSubcommand(showImages())
+                    .register();
 
-        commands.add(mainCommand.getName());
+            commands.add(mainCommand.getName());
+        }, 20L);
     }
 
     private CommandAPICommand build(String namespace, Set<String> itemNames) {

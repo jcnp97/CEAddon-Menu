@@ -6,6 +6,8 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
+
 public class TextUtils {
 
     public static void insertIntoChat(Player player, String copyUnicode, String imageId) {
@@ -21,9 +23,15 @@ public class TextUtils {
         player.sendMessage(combined);
     }
 
-//    public static void insertIntoChat(Player player, String message, String copyText) {
-//        Component component = Component.text(message, NamedTextColor.GREEN)
-//                .clickEvent(ClickEvent.suggestCommand(copyText));
-//        player.sendMessage(component);
-//    }
+    public static void insertMultipleUnicode(Player player, String yamlName, Map<String, String> images) {
+        Component combined = AdventureUtils.toComponent("<white>" + yamlName + ": ");
+        for (Map.Entry<String, String> entry : images.entrySet()) {
+            String unicode = entry.getValue();
+            Component component = Component.text(unicode, NamedTextColor.WHITE)
+                    .clickEvent(ClickEvent.suggestCommand(unicode));
+            combined = combined.append(component);
+        }
+
+        player.sendMessage(combined);
+    }
 }

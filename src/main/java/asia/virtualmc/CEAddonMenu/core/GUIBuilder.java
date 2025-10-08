@@ -1,6 +1,7 @@
 package asia.virtualmc.CEAddonMenu.core;
 
 import asia.virtualmc.CEAddonMenu.utilities.core.GUIUtils;
+import asia.virtualmc.CEAddonMenu.utilities.core.TextUtils;
 import asia.virtualmc.CEAddonMenu.utilities.items.ItemStackUtils;
 import asia.virtualmc.CEAddonMenu.utilities.messages.ConsoleUtils;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
@@ -202,8 +203,10 @@ public class GUIBuilder {
             ChestGui yamlGui = GUIUtils.getEmptyGui(ConfigReader.getTitle());
             for (Map.Entry<String, Set<ConfigReader.Image>> entry : images.entrySet()) {
                 List<GuiItem> guiItems = new ArrayList<>();
+                Map<String, String> images = new HashMap<>();
 
                 for (ConfigReader.Image data : entry.getValue()) {
+                    images.put(data.imageId(), data.unicode());
                     GuiItem guiItem = GUIUtils.getImageButton(data.imageId(), data.unicode());
                     guiItems.add(guiItem);
                 }
@@ -211,8 +214,27 @@ public class GUIBuilder {
                 ChestGui gui = GUIUtils.getGui(ConfigReader.getTitle(), guiItems);
                 if (gui != null) {
                     GUIUtils.addReturn(gui, yamlGui);
-                    yamlItems.add(GUIUtils.getGuiButton("<gold>" + entry.getKey(),
-                            gui, new ItemStack(Material.BOOK), guiItems.size()));
+                    String yamlName = entry.getKey();
+                    List<String> lore = List.of("",
+                            "<green>ʟᴇғᴛ-ᴄʟɪᴄᴋ <yellow>ᴛᴏ ᴠɪᴇᴡ ɪɴᴅɪᴠɪᴅᴜᴀʟ",
+                            "<green>ʀɪɢʜᴛ-ᴄʟɪᴄᴋ <yellow>ᴛᴏ ᴄᴏᴘʏ ᴀʟʟ",
+                            "",
+                            "<green>" + guiItems.size() + " items"
+                    );
+
+                    ItemStack newItem = ItemStackUtils.modify(new ItemStack(Material.BOOK),
+                            "<gold>" + yamlName, lore);
+                    GuiItem guiItem = new GuiItem(newItem, event -> {
+                        Player player = (Player) event.getWhoClicked();
+                        if (event.isLeftClick()) {
+                            gui.show(player);
+                        } else if (event.isRightClick()) {
+                            TextUtils.insertMultipleUnicode(player, yamlName, images);
+                            event.getWhoClicked().closeInventory();
+                        }
+                    });
+
+                    yamlItems.add(guiItem);
                 }
             }
 
