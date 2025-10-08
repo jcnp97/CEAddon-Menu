@@ -1,4 +1,4 @@
-package asia.virtualmc.CEAddonMenu.utilities;
+package asia.virtualmc.CEAddonMenu.utilities.messages;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;

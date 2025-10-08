@@ -1,4 +1,4 @@
-package asia.virtualmc.CEAddonMenu.utilities;
+package asia.virtualmc.CEAddonMenu.utilities.paper;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;

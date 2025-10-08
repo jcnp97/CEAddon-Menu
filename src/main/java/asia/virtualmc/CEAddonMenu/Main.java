@@ -1,6 +1,5 @@
 package asia.virtualmc.CEAddonMenu;
 
-import asia.virtualmc.CEAddonMenu.managers.CoreManager;
 import asia.virtualmc.CEAddonMenu.craftengine.listeners.CraftEngineReload;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
@@ -8,13 +7,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
     private static Main plugin;
-    private CoreManager coreManager;
+    private static final String prefix = "[CEAddon-Menu]";
 
     @Override
     public void onEnable() {
         plugin = this;
         CommandAPI.onEnable();
-        this.coreManager = new CoreManager();
         new CraftEngineReload(this);
     }
 
@@ -22,8 +20,7 @@ public final class Main extends JavaPlugin {
     public void onLoad() {
         CommandAPI.onLoad(new CommandAPIBukkitConfig(this)
                 .verboseOutput(false)
-                .silentLogs(true)
-        );
+                .silentLogs(true));
     }
 
     @Override
@@ -34,5 +31,5 @@ public final class Main extends JavaPlugin {
     public static Main getInstance() {
         return plugin;
     }
-    public CoreManager getCoreManager() { return coreManager; }
+    public static String getPrefix() { return prefix; }
 }

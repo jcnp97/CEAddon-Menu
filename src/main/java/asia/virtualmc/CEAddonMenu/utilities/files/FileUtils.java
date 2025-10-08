@@ -1,10 +1,13 @@
-package asia.virtualmc.CEAddonMenu.utilities;
+package asia.virtualmc.CEAddonMenu.utilities.files;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.*;
 
 public class FileUtils {
 
+    @NotNull
     public static List<File> getDirectories(File main, Set<String> excludedDirs) {
         List<File> directories = new ArrayList<>();
         if (main == null || !main.isDirectory()) {

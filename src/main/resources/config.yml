@@ -1,24 +1,16 @@
+# Should we listen on CraftEngineReloadEvent [/ce reload all] and automatically refresh the menu?
+# If false, use [/cea reload] to refresh manually.
+automatic-reload: true
+
+# Should we delay the automatic menu refresh? (Ignored if automatic-reload is FALSE)
+# Waits 60 ticks (3 seconds) before refreshing the menu.
+refresh-delay: 60
+
 # When reading into CraftEngine files, which directories should we ignore?
 excluded-directories:
   - "resourcepack"
-  - "default"
-  - "internal"
+  - "legacy_armor"
+  - "remove_shulker_head"
 
-# When reading into CraftEngine files, which files should we ignore?
-excluded-files:
-  - "templates.yml"
-  - "categories.yml"
-
-# When reading into CraftEngine files, what top-level keys should we read?
-# For more info, each configuration file (yaml file) has top-level keys such as `items`, `images`, etc.
-# If you use sub-keys such as `items#misc` or `items#food`, make sure to include those.
-keys-to-read:
-  - "items"
-  - "items#misc"
-  - "images"
-
-# Which titles should we use per every GUI?
-gui:
-  directory-menu: "§f<shift:-11><image:internal:item_browser>"
-  yaml-menu: "§f<shift:-11><image:internal:item_browser>"
-  items-menu: "§f<shift:-11><image:internal:item_browser>"
+# What GUI should we use? By default, we use CraftEngine's.
+menu-title: "§f<shift:-11><image:internal:item_browser>"

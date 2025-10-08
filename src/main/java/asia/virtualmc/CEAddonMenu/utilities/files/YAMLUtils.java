@@ -1,40 +1,54 @@
-package asia.virtualmc.CEAddonMenu.utilities;
+package asia.virtualmc.CEAddonMenu.utilities.files;
 
+import asia.virtualmc.CEAddonMenu.utilities.messages.ConsoleUtils;
 import dev.dejvokep.boostedyaml.YamlDocument;
+import dev.dejvokep.boostedyaml.libs.org.snakeyaml.engine.v2.exceptions.ConstructorException;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 public class YAMLUtils {
 
-    public static Map<String, YamlDocument> getFiles(File directory, Set<String> excluded) {
-        Map<String, YamlDocument> filesMap = new LinkedHashMap<>();
-        if (directory == null || !directory.isDirectory()) {
-            return filesMap;
-        }
+    public static Map<String, YamlDocument> getFiles(File directory) {
+        Map<String, YamlDocument> files = new HashMap<>();
+        if (directory == null || !directory.exists()) return files;
+
         File[] list = directory.listFiles();
-        if (list == null) {
-            return filesMap;
-        }
+        if (list == null) return files;
+
         for (File file : list) {
-            String fileName = file.getName();
-            if (file.isFile()
-                    && fileName.endsWith(".yml")
-                    && !excluded.contains(fileName)) {
-                try {
-                    YamlDocument document = YamlDocument.create(file);
-                    filesMap.put(fileName, document);
-                } catch (IOException e) {
-                    e.printStackTrace();
+            if (file.isDirectory()) {
+                files.putAll(getFiles(file));
+                continue;
+            }
+
+            if (!file.isFile() || !file.getName().toLowerCase().endsWith(".yml"))
+                continue;
+
+            try {
+                boolean hasContent = Files.lines(file.toPath())
+                        .anyMatch(line -> !line.trim().isEmpty() && !line.trim().startsWith("#"));
+                if (!hasContent) {
+                    ConsoleUtils.severe("Skipping empty/comment-only YAML: " + file.getPath());
+                    continue;
                 }
+
+                YamlDocument yaml = YamlDocument.create(file);
+                String name = file.getName().substring(0, file.getName().lastIndexOf('.'));
+                files.put(name, yaml);
+
+            } catch (IOException | ConstructorException e) {
+                ConsoleUtils.severe("Failed to load YAML file " + file.getPath() + ": " + e.getMessage());
             }
         }
 
-        return filesMap;
+        return files;
     }
+
 
     @Nullable
     public static YamlDocument getYaml(@NotNull Plugin plugin, @NotNull String fileName) {

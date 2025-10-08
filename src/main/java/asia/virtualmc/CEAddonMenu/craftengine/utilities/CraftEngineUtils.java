@@ -12,6 +12,16 @@ import java.util.HashMap;
 
 public class CraftEngineUtils {
 
+    public static ItemStack get(String itemId) {
+        CustomItem<ItemStack> item = CraftEngineItems.byId(Key.of(itemId));
+
+        if (item != null) {
+            return item.buildItemStack();
+        }
+
+        return null;
+    }
+
     public static ItemStack get(String namespace, String itemName) {
         CustomItem<ItemStack> item = CraftEngineItems.byId(Key.of(namespace, itemName));
 
@@ -20,6 +30,27 @@ public class CraftEngineUtils {
         }
 
         return null;
+    }
+
+    public static void give(Player player, ItemStack item, int amount) {
+        Key key = CraftEngineItems.getCustomItemId(item);
+        if (key == null) {
+            return;
+        }
+
+        CustomItem<ItemStack> customItem = CraftEngineItems.byId(key);
+        if (customItem != null) {
+            ItemStack customItemStack = customItem.buildItemStack();
+            customItemStack.setAmount(Math.max(1, amount));
+
+            HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(customItemStack);
+            if (!leftover.isEmpty()) {
+                Location dropLocation = player.getLocation();
+                leftover.values().forEach(stack -> player.getWorld().dropItemNaturally(dropLocation, stack));
+            }
+        }
+
+        player.playSound(player, "minecraft:entity.item.pickup", 1, 1);
     }
 
     public static void give(Player player, String namespace, String itemName, int amount) {
@@ -44,23 +75,6 @@ public class CraftEngineUtils {
             amount -= stackSize;
         }
 
-        player.playSound(player, "minecraft:entity.item.pickup", 1, 1);
-    }
-
-    public static void give(Player player, ItemStack item) {
-        Key key = CraftEngineItems.getCustomItemId(item);
-        if (key == null) {
-            return;
-        }
-
-        CustomItem<ItemStack> customItem = CraftEngineItems.byId(key);
-        if (customItem != null) {
-            HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(customItem.buildItemStack());
-            if (!leftover.isEmpty()) {
-                Location dropLocation = player.getLocation();
-                leftover.values().forEach(stack -> player.getWorld().dropItemNaturally(dropLocation, stack));
-            }
-        }
         player.playSound(player, "minecraft:entity.item.pickup", 1, 1);
     }
 }

@@ -1,5 +1,6 @@
-package asia.virtualmc.CEAddonMenu.utilities;
+package asia.virtualmc.CEAddonMenu.utilities.items;
 
+import asia.virtualmc.CEAddonMenu.utilities.messages.AdventureUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -10,6 +11,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemStackUtils {
+
+    public static ItemStack modify(ItemStack item, String name, List<String> toAdd) {
+        if (item == null || toAdd == null) return item;
+
+        ItemStack clonedItem = item.clone();
+        ItemMeta meta = clonedItem.getItemMeta();
+        if (meta == null) return clonedItem;
+
+        meta.displayName(AdventureUtils.toComponent(name));
+        List<Component> lore = new ArrayList<>();
+        if (meta.lore() != null) {
+            lore.addAll(meta.lore());
+        }
+
+        for (String line : toAdd) {
+            lore.add(AdventureUtils.toComponent(line));
+        }
+
+        meta.lore(lore);
+        clonedItem.setItemMeta(meta);
+        return clonedItem;
+    }
 
     public static ItemStack addLore(ItemStack item, List<String> toAdd) {
         if (item == null || toAdd == null) return item;
@@ -29,6 +52,19 @@ public class ItemStackUtils {
 
         meta.lore(lore);
         clonedItem.setItemMeta(meta);
+        return clonedItem;
+    }
+
+    public static ItemStack clearLore(ItemStack item) {
+        if (item == null) return null;
+
+        ItemStack clonedItem = item.clone();
+        ItemMeta meta = clonedItem.getItemMeta();
+        if (meta == null) return clonedItem;
+
+        meta.lore(new ArrayList<>());
+        clonedItem.setItemMeta(meta);
+
         return clonedItem;
     }
 
