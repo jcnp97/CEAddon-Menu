@@ -1,6 +1,7 @@
 package asia.virtualmc.CEAddonMenu.core;
 
 import asia.virtualmc.CEAddonMenu.Main;
+import asia.virtualmc.CEAddonMenu.integrations.placeholderapi.PAPIUtils;
 import asia.virtualmc.CEAddonMenu.utilities.paper.AsyncUtils;
 import asia.virtualmc.CEAddonMenu.utilities.Enums;
 import asia.virtualmc.CEAddonMenu.utilities.files.FileUtils;
@@ -161,7 +162,8 @@ public class ConfigReader {
                     }
 
                     case IMAGE -> {
-                        String unicode = section.getString(key + ".char");
+                        //String unicode = section.getString(key + ".char");
+                        String unicode = PAPIUtils.getValue("%image_raw_" + key + "%");
                         images.computeIfAbsent(yamlName, k -> new HashSet<>()).add(new Image(key, unicode));
                     }
                 }

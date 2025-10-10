@@ -1,4 +1,4 @@
-package asia.virtualmc.CEAddonMenu.craftengine.utilities;
+package asia.virtualmc.CEAddonMenu.integrations.craftengine.utilities;
 
 import net.momirealms.craftengine.bukkit.api.CraftEngineItems;
 import net.momirealms.craftengine.core.item.CustomItem;

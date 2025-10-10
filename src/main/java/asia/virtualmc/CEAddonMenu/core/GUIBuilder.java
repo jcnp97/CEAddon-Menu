@@ -229,7 +229,7 @@ public class GUIBuilder {
                         if (event.isLeftClick()) {
                             gui.show(player);
                         } else if (event.isRightClick()) {
-                            TextUtils.insertMultipleUnicode(player, yamlName, images);
+                            TextUtils.insertImages(player, yamlName, images);
                             event.getWhoClicked().closeInventory();
                         }
                     });

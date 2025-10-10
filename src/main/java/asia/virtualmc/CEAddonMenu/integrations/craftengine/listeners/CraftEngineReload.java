@@ -1,4 +1,4 @@
-package asia.virtualmc.CEAddonMenu.craftengine.listeners;
+package asia.virtualmc.CEAddonMenu.integrations.craftengine.listeners;
 
 import asia.virtualmc.CEAddonMenu.Main;
 import asia.virtualmc.CEAddonMenu.core.ConfigReader;

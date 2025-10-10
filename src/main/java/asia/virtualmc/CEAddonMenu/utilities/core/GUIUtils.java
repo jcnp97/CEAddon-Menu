@@ -1,6 +1,6 @@
 package asia.virtualmc.CEAddonMenu.utilities.core;
 
-import asia.virtualmc.CEAddonMenu.craftengine.utilities.CraftEngineUtils;
+import asia.virtualmc.CEAddonMenu.integrations.craftengine.utilities.CraftEngineUtils;
 import asia.virtualmc.CEAddonMenu.utilities.items.ItemStackUtils;
 import asia.virtualmc.CEAddonMenu.utilities.messages.AdventureUtils;
 import asia.virtualmc.CEAddonMenu.utilities.messages.ConsoleUtils;
@@ -108,7 +108,7 @@ public class GUIUtils {
                 SoundUtils.play(player, soundId);
             } else if (event.isRightClick()) {
                 String command = "/playsound " + soundId + " player ";
-                TextUtils.insertIntoChat(player, "<yellow>" + soundId + ": (click to copy command)", command);
+                TextUtils.insert(player, "<green>" + soundId + " [ᴄᴏᴘʏ ᴘʟᴀʏ ᴄᴏᴍᴍᴀɴᴅ]", command);
                 event.getWhoClicked().closeInventory();
             }
         });
@@ -124,9 +124,9 @@ public class GUIUtils {
         return new GuiItem(item, event -> {
             Player player = (Player) event.getWhoClicked();
             if (event.isLeftClick()) {
-                TextUtils.insertIntoChat(player, unicode, imageId);
+                TextUtils.insertImage(player, unicode, imageId);
             } else if (event.isRightClick()) {
-                TextUtils.insertIntoChat(player, unicode, imageId);
+                TextUtils.insertImage(player, unicode, imageId);
                 event.getWhoClicked().closeInventory();
             }
         });

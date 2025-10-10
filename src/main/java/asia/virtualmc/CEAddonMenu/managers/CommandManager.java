@@ -3,7 +3,7 @@ package asia.virtualmc.CEAddonMenu.managers;
 import asia.virtualmc.CEAddonMenu.Main;
 import asia.virtualmc.CEAddonMenu.core.ConfigReader;
 import asia.virtualmc.CEAddonMenu.core.GUIBuilder;
-import asia.virtualmc.CEAddonMenu.craftengine.utilities.CraftEngineUtils;
+import asia.virtualmc.CEAddonMenu.integrations.craftengine.utilities.CraftEngineUtils;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
@@ -152,13 +152,8 @@ public class CommandManager {
         return new CommandAPICommand("reload")
                 .withPermission("cea.admin")
                 .executes((sender, args) -> {
-                    if (sender instanceof Player) {
-                        configReader.readAndBuild();
-                        register();
-                        sender.sendMessage("[CEAddon-Menu] Successfully generated menus for CraftEngine.");
-                    } else {
-                        sender.sendMessage("This command can only be used by players.");
-                    }
+                    configReader.readAndBuild();
+                    register();
                 });
     }
 }

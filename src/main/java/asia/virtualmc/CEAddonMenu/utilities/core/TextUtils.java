@@ -10,7 +10,13 @@ import java.util.Map;
 
 public class TextUtils {
 
-    public static void insertIntoChat(Player player, String copyUnicode, String imageId) {
+    public static void insert(Player player, String text, String toCopy) {
+        Component component = Component.text(text, NamedTextColor.GREEN)
+                .clickEvent(ClickEvent.suggestCommand(toCopy));
+        player.sendMessage(component);
+    }
+
+    public static void insertImage(Player player, String copyUnicode, String imageId) {
         Component component = AdventureUtils.toComponent("<white>" + copyUnicode + ": ");
         Component unicode = Component.text("[ᴄᴏᴘʏ ᴜɴɪᴄᴏᴅᴇ] ", NamedTextColor.GREEN)
                 .clickEvent(ClickEvent.suggestCommand(copyUnicode));
@@ -23,7 +29,7 @@ public class TextUtils {
         player.sendMessage(combined);
     }
 
-    public static void insertMultipleUnicode(Player player, String yamlName, Map<String, String> images) {
+    public static void insertImages(Player player, String yamlName, Map<String, String> images) {
         Component combined = AdventureUtils.toComponent("<white>" + yamlName + ": ");
         for (Map.Entry<String, String> entry : images.entrySet()) {
             String unicode = entry.getValue();
