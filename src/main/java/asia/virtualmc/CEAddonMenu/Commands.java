@@ -1,10 +1,8 @@
-package asia.virtualmc.CEAddonMenu.managers;
+package asia.virtualmc.CEAddonMenu;
 
-import asia.virtualmc.CEAddonMenu.Main;
 import asia.virtualmc.CEAddonMenu.core.ConfigReader;
 import asia.virtualmc.CEAddonMenu.core.GUIBuilder;
 import asia.virtualmc.CEAddonMenu.integrations.craftengine.utilities.CraftEngineUtils;
-import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.IntegerArgument;
@@ -14,46 +12,35 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class CommandManager {
+public class Commands {
     private final ConfigReader configReader;
-    private static final Set<String> commands = new HashSet<>();
+    private final Map<String, Set<String>> items = new HashMap<>();
 
-    public CommandManager(ConfigReader configReader) {
+    public Commands(ConfigReader configReader) {
         this.configReader = configReader;
+        register();
     }
 
-
     public void register() {
-        Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
-            for (String string : commands) {
-                try {
-                    CommandAPI.unregister(string);
-                } catch (Exception ignored) {}
-            }
-            commands.clear();
+        CommandAPICommand mainCommand = new CommandAPICommand("cea");
+        CommandAPICommand getItem = new CommandAPICommand("get");
 
-            CommandAPICommand mainCommand = new CommandAPICommand("cea");
-            CommandAPICommand getItem = new CommandAPICommand("get");
+        for (Map.Entry<String, Set<String>> entry : configReader.getItems().entrySet()) {
+            getItem.withSubcommand(build(entry.getKey(), entry.getValue()));
+        }
 
-            for (Map.Entry<String, Set<String>> entry : configReader.getItems().entrySet()) {
-                getItem.withSubcommand(build(entry.getKey(), entry.getValue()));
-            }
-
-            mainCommand
-                    .withSubcommand(reload())
-                    .withSubcommand(getItem)
-                    .withSubcommand(show())
-                    .withSubcommand(showItems())
-                    .withSubcommand(showSounds())
-                    .withSubcommand(showImages())
-                    .register();
-
-            commands.add(mainCommand.getName());
-        }, 20L);
+        mainCommand
+                .withSubcommand(reload())
+                .withSubcommand(getItem)
+                .withSubcommand(show())
+                .withSubcommand(showItems())
+                .withSubcommand(showSounds())
+                .withSubcommand(showImages())
+                .register();
     }
 
     private CommandAPICommand build(String namespace, Set<String> itemNames) {
@@ -152,8 +139,8 @@ public class CommandManager {
         return new CommandAPICommand("reload")
                 .withPermission("cea.admin")
                 .executes((sender, args) -> {
-                    configReader.readAndBuild();
-                    register();
+                    configReader.readAndBuild(false);
+                    //register();
                 });
     }
 }

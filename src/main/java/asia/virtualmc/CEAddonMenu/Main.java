@@ -2,7 +2,7 @@ package asia.virtualmc.CEAddonMenu;
 
 import asia.virtualmc.CEAddonMenu.integrations.craftengine.listeners.CraftEngineReload;
 import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import dev.jorel.commandapi.CommandAPIPaperConfig;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
@@ -18,7 +18,8 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        CommandAPI.onLoad(new CommandAPIBukkitConfig(this)
+        new Dependency(this);
+        CommandAPI.onLoad(new CommandAPIPaperConfig(this)
                 .verboseOutput(false)
                 .silentLogs(true));
     }

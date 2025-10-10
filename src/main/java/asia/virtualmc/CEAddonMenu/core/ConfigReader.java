@@ -1,5 +1,6 @@
 package asia.virtualmc.CEAddonMenu.core;
 
+import asia.virtualmc.CEAddonMenu.Commands;
 import asia.virtualmc.CEAddonMenu.Main;
 import asia.virtualmc.CEAddonMenu.integrations.placeholderapi.PAPIUtils;
 import asia.virtualmc.CEAddonMenu.utilities.paper.AsyncUtils;
@@ -51,14 +52,19 @@ public class ConfigReader {
     public ConfigReader(Main plugin) {
         this.plugin = plugin;
         load();
+        if (read()) new Commands(this);
     }
 
-    public void readAndBuild() {
-        AsyncUtils.runAsyncThenSync(plugin, this::read, (result) -> {
+    public void readAndBuild(boolean firstReload) {
+        if (firstReload) {
+            new GUIBuilder.Menu(packs, items, sounds, images).build();
+        } else {
+            AsyncUtils.runAsyncThenSync(plugin, this::read, (result) -> {
                 if (result) {
                     new GUIBuilder.Menu(packs, items, sounds, images).build();
                 }
-        });
+            });
+        }
     }
 
     // private methods
