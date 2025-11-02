@@ -49,6 +49,37 @@ public class YAMLUtils {
         return files;
     }
 
+    public static Map<String, YamlDocument> getFilesNonRecursive(File directory) {
+        Map<String, YamlDocument> files = new HashMap<>();
+        if (directory == null || !directory.exists()) return files;
+
+        File[] list = directory.listFiles();
+        if (list == null) return files;
+
+        for (File file : list) {
+            // Skip subdirectories entirely
+            if (!file.isFile() || !file.getName().toLowerCase().endsWith(".yml"))
+                continue;
+
+            try {
+                boolean hasContent = Files.lines(file.toPath())
+                        .anyMatch(line -> !line.trim().isEmpty() && !line.trim().startsWith("#"));
+                if (!hasContent) {
+                    ConsoleUtils.severe("Skipping empty/comment-only YAML: " + file.getPath());
+                    continue;
+                }
+
+                YamlDocument yaml = YamlDocument.create(file);
+                String name = file.getName().substring(0, file.getName().lastIndexOf('.'));
+                files.put(name, yaml);
+
+            } catch (IOException | ConstructorException e) {
+                ConsoleUtils.severe("Failed to load YAML file " + file.getPath() + ": " + e.getMessage());
+            }
+        }
+
+        return files;
+    }
 
     @Nullable
     public static YamlDocument getYaml(@NotNull Plugin plugin, @NotNull String fileName) {

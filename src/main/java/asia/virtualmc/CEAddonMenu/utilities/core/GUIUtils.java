@@ -108,7 +108,7 @@ public class GUIUtils {
                 SoundUtils.play(player, soundId);
             } else if (event.isRightClick()) {
                 String command = "/playsound " + soundId + " player ";
-                TextUtils.insert(player, "<green>" + soundId + " [ᴄᴏᴘʏ ᴘʟᴀʏ ᴄᴏᴍᴍᴀɴᴅ]", command);
+                TextUtils.insert(player, soundId + " [ᴄᴏᴘʏ ᴘʟᴀʏ ᴄᴏᴍᴍᴀɴᴅ]", command);
                 event.getWhoClicked().closeInventory();
             }
         });

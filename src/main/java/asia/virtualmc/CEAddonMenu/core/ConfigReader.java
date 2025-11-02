@@ -106,13 +106,24 @@ public class ConfigReader {
             // Skip if pack is disabled or no pack.yml
             if (namespace == null) continue;
 
-            // Recursively get all .yml files from file/directory pack
+            // Get configuration directory
             File configuration = new File(packFile, "configuration");
             if (!configuration.isDirectory()) {
                 ConsoleUtils.severe("Unable to find configuration directory from " + packName + ".");
                 continue;
             }
 
+            // Recursively retrieve all .yml files under "configuration" without subfolders
+            Map<String, YamlDocument> rootFiles = YAMLUtils.getFilesNonRecursive(configuration);
+            if (!rootFiles.isEmpty()) {
+                packs.computeIfAbsent(packName, k -> new HashSet<>()).add(null);
+                for (Map.Entry<String, YamlDocument> entry : rootFiles.entrySet()) {
+                    String yamlName = entry.getKey() + ".yml";
+                    readIntoYaml(packName, null, yamlName, namespace, entry.getValue());
+                }
+            }
+
+            // Recursively get all .yml files from file/directory pack
             List<File> dirFiles = FileUtils.getDirectories(configuration, excluded);
             if (dirFiles.isEmpty()) continue;
 
@@ -168,8 +179,10 @@ public class ConfigReader {
                     }
 
                     case IMAGE -> {
-                        //String unicode = section.getString(key + ".char");
-                        String unicode = PAPIUtils.getValue("%image_raw_" + key + "%");
+                        String unicode = section.getString(key + ".char");
+                        if (unicode == null || unicode.isEmpty()) {
+                            unicode = PAPIUtils.getValue("%image_raw_" + key + "%");
+                        }
                         images.computeIfAbsent(yamlName, k -> new HashSet<>()).add(new Image(key, unicode));
                     }
                 }

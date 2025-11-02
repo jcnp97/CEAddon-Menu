@@ -1,7 +1,9 @@
 package asia.virtualmc.CEAddonMenu.core;
 
+import asia.virtualmc.CEAddonMenu.Main;
 import asia.virtualmc.CEAddonMenu.utilities.core.GUIUtils;
 import asia.virtualmc.CEAddonMenu.utilities.core.TextUtils;
+import asia.virtualmc.CEAddonMenu.utilities.files.JSONUtils;
 import asia.virtualmc.CEAddonMenu.utilities.items.ItemStackUtils;
 import asia.virtualmc.CEAddonMenu.utilities.messages.ConsoleUtils;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
@@ -73,6 +75,7 @@ public class GUIBuilder {
 
                 Map<String, ChestGui> dirGuiMap = new HashMap<>();
                 for (String directory : directories) {
+                    if (directory == null || directory.isEmpty()) continue;
                     dirGuiMap.put(directory, GUIUtils.getEmptyGui(ConfigReader.getTitle()));
                 }
 
@@ -97,6 +100,7 @@ public class GUIBuilder {
                 List<GuiItem> dirItems = new ArrayList<>();
 
                 for (String directory : directories) {
+                    if (directory == null || directory.isEmpty()) continue;
                     List<GuiItem> items = directoryItems.get(directory);
                     if (items == null || items.isEmpty()) continue;
 
@@ -108,10 +112,22 @@ public class GUIBuilder {
                             gui, new ItemStack(Material.BOOK), items.size()));
                 }
 
+                // item count (number of .yml files and directories)
+                int itemCount = 0;
+
+                // add YAMLs (without subfolders) directly to pack GUI
+                List<GuiItem> rootYaml = directoryItems.get(null);
+                if (rootYaml != null && !rootYaml.isEmpty()) {
+                    dirItems.addAll(rootYaml);
+                    itemCount += rootYaml.size();
+                }
+
                 packGui = GUIUtils.populateGui(packGui, dirItems);
                 GUIUtils.addReturn(packGui, itemMenu);
+
+                int dirCount = (int) directories.stream().filter(Objects::nonNull).count();
                 packItems.add(GUIUtils.getGuiButton("<gold>" + packName,
-                        packGui, new ItemStack(Material.BOOK), directories.size()));
+                        packGui, new ItemStack(Material.BOOK), dirCount + itemCount));
             }
 
             itemMenu = GUIUtils.populateGui(itemMenu, packItems);
@@ -159,9 +175,18 @@ public class GUIBuilder {
 
                 if (items.isEmpty()) continue;
                 ChestGui gui = GUIUtils.getGui(ConfigReader.getTitle(), items);
-                ChestGui prevGui = directoryGuis
-                        .getOrDefault(key.packName(), Collections.emptyMap())
-                        .get(key.dirName());
+
+                Map<String, ChestGui> packDirMap = directoryGuis
+                        .getOrDefault(key.packName(), Collections.emptyMap());
+
+                // try folder first
+                ChestGui prevGui = packDirMap.get(key.dirName());
+
+                // if directory == null → attach to the pack GUI
+                if (prevGui == null) {
+                    prevGui = packGuis.get(key.packName());
+                }
+
                 if (gui != null && prevGui != null) {
                     ItemStack icon = items.getLast().getItem().clone();
                     GUIUtils.addReturn(gui, prevGui);
@@ -239,6 +264,18 @@ public class GUIBuilder {
             }
 
             imageMenu = GUIUtils.populateGui(yamlGui, yamlItems);
+
+            // write all unicodes into images directory
+            for (Map.Entry<String, Set<ConfigReader.Image>> entry : images.entrySet()) {
+                Map<String, String> unicodes = new HashMap<>();
+                for (ConfigReader.Image image : entry.getValue()) {
+                    unicodes.put(image.imageId(), image.unicode());
+                }
+
+                if (!unicodes.isEmpty()) {
+                    JSONUtils.write("images", entry.getKey(), unicodes);
+                }
+            }
         }
     }
 }
