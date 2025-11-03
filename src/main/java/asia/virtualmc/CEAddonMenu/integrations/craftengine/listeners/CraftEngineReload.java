@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public class CraftEngineReload implements Listener {
     private final Main plugin;
     private final ConfigReader configReader;
+    private static boolean isLoaded = false;
 
     public CraftEngineReload(@NotNull Main plugin) {
         this.plugin = plugin;
@@ -23,7 +24,13 @@ public class CraftEngineReload implements Listener {
     @EventHandler
     public void onReload(CraftEngineReloadEvent event) {
         plugin.getServer().getGlobalRegionScheduler().runDelayed(plugin, task -> {
-            configReader.readAndBuild(event.isFirstReload());
+            if (event.isFirstReload()) {
+                configReader.readAndBuild(true);
+                isLoaded = true;
+            } else {
+                configReader.readAndBuild(false);
+            }
+
         }, ConfigReader.getRefreshDelay());
     }
 }

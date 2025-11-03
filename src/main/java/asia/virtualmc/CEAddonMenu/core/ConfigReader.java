@@ -2,6 +2,7 @@ package asia.virtualmc.CEAddonMenu.core;
 
 import asia.virtualmc.CEAddonMenu.Commands;
 import asia.virtualmc.CEAddonMenu.Main;
+import asia.virtualmc.CEAddonMenu.integrations.craftengine.utilities.CraftEngineUtils;
 import asia.virtualmc.CEAddonMenu.integrations.placeholderapi.PAPIUtils;
 import asia.virtualmc.CEAddonMenu.utilities.paper.AsyncUtils;
 import asia.virtualmc.CEAddonMenu.utilities.Enums;
@@ -10,13 +11,16 @@ import asia.virtualmc.CEAddonMenu.utilities.files.YAMLUtils;
 import asia.virtualmc.CEAddonMenu.utilities.messages.ConsoleUtils;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.block.implementation.Section;
+import net.momirealms.craftengine.core.util.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 public class ConfigReader {
     private final Main plugin;
@@ -36,7 +40,7 @@ public class ConfigReader {
 
     public record Image(
             @NotNull String imageId,
-            @NotNull String unicode
+            @Nullable String unicode
     ) {}
 
     // key=packName, value=directories
@@ -180,9 +184,12 @@ public class ConfigReader {
 
                     case IMAGE -> {
                         String unicode = section.getString(key + ".char");
-                        if (unicode == null || unicode.isEmpty()) {
-                            unicode = PAPIUtils.getValue("%image_raw_" + key + "%");
-                        }
+//                        String unicode = Stream.of(section.getString(key + ".char"),
+//                                CraftEngineUtils.getImage(Key.of(key)),
+//                                PAPIUtils.getValue("%image_raw_" + key + "%"))
+//                                .filter(s -> s != null && !s.isEmpty())
+//                                .findFirst()
+//                                .orElse("");
                         images.computeIfAbsent(yamlName, k -> new HashSet<>()).add(new Image(key, unicode));
                     }
                 }

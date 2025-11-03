@@ -1,12 +1,17 @@
 package asia.virtualmc.CEAddonMenu.integrations.craftengine.utilities;
 
+import asia.virtualmc.CEAddonMenu.utilities.messages.ConsoleUtils;
+import net.momirealms.craftengine.bukkit.api.CraftEngineImages;
 import net.momirealms.craftengine.bukkit.api.CraftEngineItems;
+import net.momirealms.craftengine.core.font.BitmapImage;
 import net.momirealms.craftengine.core.item.CustomItem;
 import net.momirealms.craftengine.core.util.Key;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
@@ -76,5 +81,23 @@ public class CraftEngineUtils {
         }
 
         player.playSound(player, "minecraft:entity.item.pickup", 1, 1);
+    }
+
+    @Nullable
+    public static String getImage(@NotNull Key imageId) {
+        BitmapImage image = CraftEngineImages.byId(imageId);
+        if (image == null) {
+            ConsoleUtils.severe("Trying to get the unicode of " + imageId + " but it is NULL!");
+            return null;
+        }
+
+        StringBuilder result = new StringBuilder();
+        for (int row = 0; row < image.rows(); row++) {
+            for (int col = 0; col < image.columns(); col++) {
+                int codepoint = image.codepointAt(row, col);
+                result.append(new String(Character.toChars(codepoint)));
+            }
+        }
+        return result.toString();
     }
 }

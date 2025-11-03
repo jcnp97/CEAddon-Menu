@@ -1,6 +1,7 @@
 package asia.virtualmc.CEAddonMenu.core;
 
-import asia.virtualmc.CEAddonMenu.Main;
+import asia.virtualmc.CEAddonMenu.integrations.craftengine.utilities.CraftEngineUtils;
+import asia.virtualmc.CEAddonMenu.integrations.placeholderapi.PAPIUtils;
 import asia.virtualmc.CEAddonMenu.utilities.core.GUIUtils;
 import asia.virtualmc.CEAddonMenu.utilities.core.TextUtils;
 import asia.virtualmc.CEAddonMenu.utilities.files.JSONUtils;
@@ -8,11 +9,13 @@ import asia.virtualmc.CEAddonMenu.utilities.items.ItemStackUtils;
 import asia.virtualmc.CEAddonMenu.utilities.messages.ConsoleUtils;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
+import net.momirealms.craftengine.core.util.Key;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class GUIBuilder {
     private static ChestGui mainMenu;
@@ -231,8 +234,19 @@ public class GUIBuilder {
                 Map<String, String> images = new HashMap<>();
 
                 for (ConfigReader.Image data : entry.getValue()) {
-                    images.put(data.imageId(), data.unicode());
-                    GuiItem guiItem = GUIUtils.getImageButton(data.imageId(), data.unicode());
+                    String id = data.imageId();
+                    String unicode = data.unicode();
+
+                    if (unicode == null || unicode.isEmpty()) {
+                        unicode = Stream.of(CraftEngineUtils.getImage(Key.of(id)),
+                                PAPIUtils.getValue("%image_raw_" + id + "%"))
+                                .filter(s -> s != null && !s.isEmpty())
+                                .findFirst()
+                                .orElse("");
+                    }
+
+                    images.put(id, unicode);
+                    GuiItem guiItem = GUIUtils.getImageButton(id, unicode);
                     guiItems.add(guiItem);
                 }
 
@@ -268,8 +282,19 @@ public class GUIBuilder {
             // write all unicodes into images directory
             for (Map.Entry<String, Set<ConfigReader.Image>> entry : images.entrySet()) {
                 Map<String, String> unicodes = new HashMap<>();
-                for (ConfigReader.Image image : entry.getValue()) {
-                    unicodes.put(image.imageId(), image.unicode());
+                for (ConfigReader.Image data : entry.getValue()) {
+                    String id = data.imageId();
+                    String unicode = data.unicode();
+
+                    if (unicode == null || unicode.isEmpty()) {
+                        unicode = Stream.of(CraftEngineUtils.getImage(Key.of(id)),
+                                        PAPIUtils.getValue("%image_raw_" + id + "%"))
+                                .filter(s -> s != null && !s.isEmpty())
+                                .findFirst()
+                                .orElse("");
+                    }
+
+                    unicodes.put(id, unicode);
                 }
 
                 if (!unicodes.isEmpty()) {
