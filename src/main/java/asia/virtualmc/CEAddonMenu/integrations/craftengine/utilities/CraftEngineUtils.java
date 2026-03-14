@@ -1,10 +1,10 @@
 package asia.virtualmc.CEAddonMenu.integrations.craftengine.utilities;
 
 import asia.virtualmc.CEAddonMenu.utilities.messages.ConsoleUtils;
-import net.momirealms.craftengine.bukkit.api.CraftEngineImages;
 import net.momirealms.craftengine.bukkit.api.CraftEngineItems;
 import net.momirealms.craftengine.core.font.BitmapImage;
 import net.momirealms.craftengine.core.item.CustomItem;
+import net.momirealms.craftengine.core.plugin.CraftEngine;
 import net.momirealms.craftengine.core.util.Key;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -85,7 +85,10 @@ public class CraftEngineUtils {
 
     @Nullable
     public static String getImage(@NotNull Key imageId) {
-        BitmapImage image = CraftEngineImages.byId(imageId);
+        BitmapImage image = CraftEngine.instance().fontManager()
+                .bitmapImageById(imageId)
+                .orElse(null);
+
         if (image == null) {
             ConsoleUtils.severe("Trying to get the unicode of " + imageId + " but it is NULL!");
             return null;

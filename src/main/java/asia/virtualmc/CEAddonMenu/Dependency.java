@@ -18,7 +18,7 @@ public class Dependency {
         Library ifLib = Library.builder()
                 .groupId("com{}github{}stefvanschie{}inventoryframework")
                 .artifactId("IF")
-                .version("0.11.5")
+                .version("0.11.6")
                 .build();
 
         libby.loadLibrary(boostedYaml);
